@@ -1,6 +1,10 @@
 package freetree
 
-import "sort"
+import (
+	"runtime"
+	"runtime/debug"
+	"sort"
+)
 
 // -----------------------------------------------------------------------------
 
@@ -22,27 +26,29 @@ func NewSimpleTree() *SimpleTree {
 // sorted in increasing order, the tree will be perfectly balanced.
 // This means you don't have to Rebalance() the tree if you've inserted all
 // your pre-sorted data in one Insert() call.
-func (st *SimpleTree) Insert(cs ...Comparable) {
-	st.insert(cs)
+func (st *SimpleTree) Insert(cs ...Comparable) *SimpleTree {
+	return st.InsertArray(cs)
 }
 
 // InsertArray is a helper to use Insert() with a ComparableArray.
-func (st *SimpleTree) InsertArray(cs ComparableArray) {
-	st.insert(cs)
-	st.nodes += uint(len(cs))
+func (st *SimpleTree) InsertArray(ca ComparableArray) *SimpleTree {
+	st.insert(ca)
+	st.nodes += uint(len(ca))
+
+	return st
 }
 
-func (st *SimpleTree) insert(cs ComparableArray) {
-	l := len(cs)
+func (st *SimpleTree) insert(ca ComparableArray) {
+	l := len(ca)
 	if l == 0 {
 		return
 	}
 
-	st.root = st.root.insert(cs[l/2])
+	st.root = st.root.insert(ca[l/2])
 
 	if l > 1 {
-		st.insert(cs[:l/2])
-		st.insert(cs[l/2+1:])
+		st.insert(ca[:l/2])
+		st.insert(ca[l/2+1:])
 	}
 }
 
@@ -58,15 +64,26 @@ func (st SimpleTree) ascend(pivot Comparable) Comparable {
 // Rebalance rebalances the tree to guarantee O(log(n)) search complexity.
 //
 // Rebalancing is implemented as straightforwardly as possible: it's dumb.
-// I strongly suggest running the garbage collector once it's done.
+// I strongly suggest running the garbage collector and scavenger once it's done.
 //   runtime.GC()
 //   debug.FreeOSMemory()
-func (st *SimpleTree) Rebalance() {
+func (st *SimpleTree) Rebalance() *SimpleTree {
 	flat := st.flatten()
 	sort.Sort(flat)
 
 	st.root = nil
 	st.insert(flat)
+
+	return st
+}
+
+// Rebalance rebalances the tree and runs the garbage collector.
+func (st *SimpleTree) RebalanceGC() *SimpleTree {
+	st.Rebalance()
+	runtime.GC()
+	debug.FreeOSMemory()
+
+	return st
 }
 
 // Flatten returns the content of the tree as a ComparableArray.
