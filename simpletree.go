@@ -97,6 +97,11 @@ func (st SimpleTree) flatten() ComparableArray {
 	return st.root.flatten(ca)
 }
 
+func (st SimpleTree) flattenNodes() []*simpleNode {
+	na := make([]*simpleNode, 0, st.nodes)
+	return st.root.flattenNodes(na)
+}
+
 // -----------------------------------------------------------------------------
 
 type simpleNode struct {
@@ -142,4 +147,15 @@ func (sn *simpleNode) flatten(ca ComparableArray) ComparableArray {
 	ca = sn.right.flatten(ca)
 
 	return append(ca, sn.data)
+}
+
+func (sn *simpleNode) flattenNodes(na []*simpleNode) []*simpleNode {
+	if sn == nil {
+		return na
+	}
+
+	na = sn.left.flattenNodes(na)
+	na = sn.right.flattenNodes(na)
+
+	return append(na, sn)
 }
