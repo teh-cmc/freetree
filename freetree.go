@@ -1,6 +1,6 @@
 package freetree
 
-import "log"
+import "sort"
 
 // -----------------------------------------------------------------------------
 
@@ -39,11 +39,10 @@ func (st *SimpleTree) insert(cs ComparableArray) {
 	}
 
 	st.root = st.root.insert(cs[l/2])
-	log.Println(st.root)
 
 	if l > 1 {
 		st.insert(cs[:l/2])
-		st.insert(cs[l/2:])
+		st.insert(cs[l/2+1:])
 	}
 }
 
@@ -54,6 +53,20 @@ func (st SimpleTree) Ascend(pivot Comparable) Comparable {
 
 func (st SimpleTree) ascend(pivot Comparable) Comparable {
 	return st.root.ascend(pivot)
+}
+
+// Rebalance rebalances the tree to guarantee O(log(n)) search complexity.
+//
+// Rebalancing is implemented as straightforwardly as possible: it's dumb.
+// I strongly suggest running the garbage collector once it's done.
+//   runtime.GC()
+//   debug.FreeOSMemory()
+func (st *SimpleTree) Rebalance() {
+	flat := st.flatten()
+	sort.Sort(flat)
+
+	st.root = nil
+	st.insert(flat)
 }
 
 // Flatten returns the content of the tree as a ComparableArray.
