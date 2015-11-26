@@ -1,10 +1,13 @@
 package freetree
 
+import "log"
+
 // -----------------------------------------------------------------------------
 
 // SimpleTree implements a simple binary search tree.
 type SimpleTree struct {
-	root *simpleNode
+	root  *simpleNode
+	nodes uint
 }
 
 // NewSimpleTree returns an empty SimpleTree.
@@ -26,6 +29,7 @@ func (st *SimpleTree) Insert(cs ...Comparable) {
 // InsertArray is a helper to use Insert() with a ComparableArray.
 func (st *SimpleTree) InsertArray(cs ComparableArray) {
 	st.insert(cs)
+	st.nodes += uint(len(cs))
 }
 
 func (st *SimpleTree) insert(cs ComparableArray) {
@@ -35,6 +39,7 @@ func (st *SimpleTree) insert(cs ComparableArray) {
 	}
 
 	st.root = st.root.insert(cs[l/2])
+	log.Println(st.root)
 
 	if l > 1 {
 		st.insert(cs[:l/2])
@@ -49,6 +54,16 @@ func (st SimpleTree) Ascend(pivot Comparable) Comparable {
 
 func (st SimpleTree) ascend(pivot Comparable) Comparable {
 	return st.root.ascend(pivot)
+}
+
+// Flatten returns the content of the tree as a ComparableArray.
+func (st SimpleTree) Flatten() ComparableArray {
+	return st.flatten()
+}
+
+func (st SimpleTree) flatten() ComparableArray {
+	ca := make(ComparableArray, 0, st.nodes)
+	return st.root.flatten(ca)
 }
 
 // -----------------------------------------------------------------------------
@@ -82,4 +97,15 @@ func (sn *simpleNode) ascend(pivot Comparable) Comparable {
 	} else {
 		return sn.right.ascend(pivot)
 	}
+}
+
+func (sn *simpleNode) flatten(ca ComparableArray) ComparableArray {
+	if sn == nil {
+		return ca
+	}
+
+	ca = sn.left.flatten(ca)
+	ca = sn.right.flatten(ca)
+
+	return append(ca, sn.data)
 }
