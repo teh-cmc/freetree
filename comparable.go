@@ -21,8 +21,3 @@ func (ca ComparableArray) Less(i, j int) bool { return ca[i].Less(ca[j]) }
 
 // Swap swaps the values of `ca[i]` and `ca[j]`.
 func (ca ComparableArray) Swap(i, j int) { ca[i], ca[j] = ca[j], ca[i] }
-
-// -----------------------------------------------------------------------------
-
-// ComparableIterator is used to walk through a SimpleTree or a FreeTree.
-type ComparableIterator func(c Comparable) bool

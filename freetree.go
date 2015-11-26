@@ -42,6 +42,15 @@ func (st *SimpleTree) insert(cs ComparableArray) {
 	}
 }
 
+// Ascend returns the first element in the tree that is >= `pivot`.
+func (st SimpleTree) Ascend(pivot Comparable) Comparable {
+	return st.ascend(pivot)
+}
+
+func (st SimpleTree) ascend(pivot Comparable) Comparable {
+	return st.root.ascend(pivot)
+}
+
 // -----------------------------------------------------------------------------
 
 type simpleNode struct {
@@ -61,4 +70,16 @@ func (sn *simpleNode) insert(c Comparable) *simpleNode {
 	}
 
 	return sn
+}
+
+func (sn *simpleNode) ascend(pivot Comparable) Comparable {
+	if sn == nil {
+		return nil
+	}
+
+	if pivot.Less(sn.data) {
+		return sn.data
+	} else {
+		return sn.right.ascend(pivot)
+	}
 }
