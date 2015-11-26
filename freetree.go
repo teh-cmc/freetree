@@ -106,10 +106,12 @@ func (sn *simpleNode) ascend(pivot Comparable) Comparable {
 	}
 
 	if pivot.Less(sn.data) {
-		return sn.data
-	} else {
+		return sn.left.ascend(pivot)
+	} else if sn.data.Less(pivot) {
 		return sn.right.ascend(pivot)
 	}
+
+	return sn.data
 }
 
 func (sn *simpleNode) flatten(ca ComparableArray) ComparableArray {
