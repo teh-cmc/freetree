@@ -20,7 +20,7 @@ func TestSimpleTree_pair_sorted_input(t *testing.T) {
 	st.InsertArray(cs)
 	flat := st.Flatten()
 
-	for i := range flat {
+	for i := range expected {
 		if flat[i] != expected[i] {
 			t.Error("expected != flat")
 			t.FailNow()
@@ -58,7 +58,7 @@ func TestSimpleTree_pair_sorted_input_rebalanced(t *testing.T) {
 	st.InsertArray(cs)
 	flat := st.Flatten()
 
-	for i := range flat {
+	for i := range expected {
 		if flat[i] != expected[i] {
 			t.Error("expected != flat")
 			t.FailNow()
@@ -96,7 +96,7 @@ func TestSimpleTree_pair_unsorted_input(t *testing.T) {
 	st.InsertArray(cs)
 	flat := st.Flatten()
 
-	for i := range flat {
+	for i := range expected {
 		if flat[i] != expected[i] {
 			t.Error("expected != flat")
 			t.FailNow()
@@ -135,7 +135,7 @@ func TestSimpleTree_pair_unsorted_input_rebalanced(t *testing.T) {
 	st.Rebalance()
 	flat := st.Flatten()
 
-	for i := range flat {
+	for i := range expected {
 		if flat[i] != expected[i] {
 			t.Error("expected != flat")
 			t.FailNow()

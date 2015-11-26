@@ -32,19 +32,19 @@ func (st *SimpleTree) Insert(cs ...Comparable) *SimpleTree {
 
 // InsertArray is a helper to use Insert() with a ComparableArray.
 func (st *SimpleTree) InsertArray(ca ComparableArray) *SimpleTree {
-	st.insert(ca, st.nodes)
-	st.nodes += uint(len(ca))
+	st.insert(ca, &st.nodes)
 
 	return st
 }
 
-func (st *SimpleTree) insert(ca ComparableArray, id uint) {
+func (st *SimpleTree) insert(ca ComparableArray, id *uint) {
 	l := len(ca)
 	if l == 0 {
 		return
 	}
 
-	st.root = st.root.insert(ca[l/2], id)
+	st.root = st.root.insert(ca[l/2], *id)
+	(*id)++
 
 	if l > 1 {
 		st.insert(ca[:l/2], id)
@@ -73,7 +73,7 @@ func (st *SimpleTree) Rebalance() *SimpleTree {
 
 	st.root = nil
 	st.nodes = 0
-	st.insert(flat, 0)
+	st.insert(flat, &st.nodes)
 
 	return st
 }
