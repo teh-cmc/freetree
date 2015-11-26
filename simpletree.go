@@ -32,23 +32,23 @@ func (st *SimpleTree) Insert(cs ...Comparable) *SimpleTree {
 
 // InsertArray is a helper to use Insert() with a ComparableArray.
 func (st *SimpleTree) InsertArray(ca ComparableArray) *SimpleTree {
-	st.insert(ca)
+	st.insert(ca, st.nodes)
 	st.nodes += uint(len(ca))
 
 	return st
 }
 
-func (st *SimpleTree) insert(ca ComparableArray) {
+func (st *SimpleTree) insert(ca ComparableArray, id uint) {
 	l := len(ca)
 	if l == 0 {
 		return
 	}
 
-	st.root = st.root.insert(ca[l/2])
+	st.root = st.root.insert(ca[l/2], id)
 
 	if l > 1 {
-		st.insert(ca[:l/2])
-		st.insert(ca[l/2+1:])
+		st.insert(ca[:l/2], id)
+		st.insert(ca[l/2+1:], id)
 	}
 }
 
@@ -72,7 +72,8 @@ func (st *SimpleTree) Rebalance() *SimpleTree {
 	sort.Sort(flat)
 
 	st.root = nil
-	st.insert(flat)
+	st.nodes = 0
+	st.insert(flat, 0)
 
 	return st
 }
@@ -99,19 +100,20 @@ func (st SimpleTree) flatten() ComparableArray {
 // -----------------------------------------------------------------------------
 
 type simpleNode struct {
+	id          uint
 	left, right *simpleNode
 	data        Comparable
 }
 
-func (sn *simpleNode) insert(c Comparable) *simpleNode {
+func (sn *simpleNode) insert(c Comparable, id uint) *simpleNode {
 	if sn == nil {
-		return &simpleNode{data: c}
+		return &simpleNode{id: id, data: c}
 	}
 
 	if c.Less(sn.data) {
-		sn.left = sn.left.insert(c)
+		sn.left = sn.left.insert(c, id)
 	} else {
-		sn.right = sn.right.insert(c)
+		sn.right = sn.right.insert(c, id)
 	}
 
 	return sn
