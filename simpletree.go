@@ -46,7 +46,7 @@ func (st *SimpleTree) insert(cs ComparableArray) {
 	}
 }
 
-// Ascend returns the first element in the tree that is >= `pivot`.
+// Ascend returns the first element in the tree that is == `pivot`.
 func (st SimpleTree) Ascend(pivot Comparable) Comparable {
 	return st.ascend(pivot)
 }
