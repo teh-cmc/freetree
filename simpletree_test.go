@@ -40,11 +40,9 @@ func TestSimpleTree_pair_sorted_input(t *testing.T) {
 		t.Error("unexpected retval")
 	}
 	if st.Ascend(intTest(7)) != nil {
-		log.Println(st.Ascend(intTest(7)).(intTest))
 		t.Error("unexpected retval")
 	}
 	if st.Ascend(intTest(8)) != nil {
-		log.Println(st.Ascend(intTest(8)).(intTest))
 		t.Error("unexpected retval")
 	}
 }
