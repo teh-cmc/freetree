@@ -29,15 +29,15 @@ func NewFreeTree(st *SimpleTree) (*FreeTree, error) {
 
 	ft := &FreeTree{nodeChunk: nodeChunk, dataChunk: dataChunk}
 	for _, n := range st.flattenNodes() {
-		node := (*freeNode)(ft.nodeChunk.Index(int(n.id)))
+		node := (*freeNode)(unsafe.Pointer(ft.nodeChunk.Pointer(int(n.id))))
 		node.id = n.id
 		if n.left != nil {
-			node.left = uintptr(nodeChunk.Index(int(n.left.id)))
+			node.left = nodeChunk.Pointer(int(n.left.id))
 		}
 		if n.right != nil {
-			node.right = uintptr(nodeChunk.Index(int(n.right.id)))
+			node.right = nodeChunk.Pointer(int(n.right.id))
 		}
-		node.data = uintptr(dataChunk.Index(int(n.id)))
+		dataChunk.Write(int(n.id), n.data)
 
 		if n == st.root {
 			ft.root = node
@@ -53,7 +53,7 @@ func (ft FreeTree) Ascend(pivot Comparable) Comparable {
 }
 
 func (ft FreeTree) ascend(pivot Comparable) Comparable {
-	return ft.root.ascend(pivot)
+	return ft.root.ascend(pivot, ft.dataChunk)
 }
 
 // Flatten returns the content of the tree as a ComparableArray.
@@ -63,7 +63,7 @@ func (ft FreeTree) Flatten() ComparableArray {
 
 func (ft FreeTree) flatten() ComparableArray {
 	ca := make(ComparableArray, 0, ft.nodeChunk.NbObjects())
-	return ft.root.flatten(ca)
+	return ft.root.flatten(ca, ft.dataChunk)
 }
 
 // -----------------------------------------------------------------------------
@@ -71,30 +71,30 @@ func (ft FreeTree) flatten() ComparableArray {
 type freeNode struct {
 	id          uint
 	left, right uintptr
-	data        uintptr
 }
 
-func (sn *freeNode) ascend(pivot Comparable) Comparable {
+func (sn *freeNode) ascend(pivot Comparable, dataChunk mmm.MemChunk) Comparable {
 	if sn == nil {
 		return nil
 	}
 
-	if pivot.Less(*(*Comparable)(unsafe.Pointer(sn.data))) {
-		return ((*freeNode)(unsafe.Pointer(sn.left))).ascend(pivot)
-	} else if (*(*Comparable)(unsafe.Pointer(sn.data))).Less(pivot) {
-		return ((*freeNode)(unsafe.Pointer(sn.right))).ascend(pivot)
+	data := dataChunk.Read(int(sn.id)).(Comparable)
+	if pivot.Less(data) {
+		return ((*freeNode)(unsafe.Pointer(sn.left))).ascend(pivot, dataChunk)
+	} else if data.Less(pivot) {
+		return ((*freeNode)(unsafe.Pointer(sn.right))).ascend(pivot, dataChunk)
 	}
 
-	return *((*Comparable)(unsafe.Pointer(sn.data)))
+	return data
 }
 
-func (sn *freeNode) flatten(ca ComparableArray) ComparableArray {
+func (sn *freeNode) flatten(ca ComparableArray, dataChunk mmm.MemChunk) ComparableArray {
 	if sn == nil {
 		return ca
 	}
 
-	ca = ((*freeNode)(unsafe.Pointer(sn.left))).flatten(ca)
-	ca = ((*freeNode)(unsafe.Pointer(sn.right))).flatten(ca)
+	ca = ((*freeNode)(unsafe.Pointer(sn.left))).flatten(ca, dataChunk)
+	ca = ((*freeNode)(unsafe.Pointer(sn.right))).flatten(ca, dataChunk)
 
-	return append(ca, *((*Comparable)(unsafe.Pointer(sn.data))))
+	return append(ca, dataChunk.Read(int(sn.id)).(Comparable))
 }
