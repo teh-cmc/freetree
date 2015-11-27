@@ -67,6 +67,7 @@ func (st SimpleTree) ascend(pivot Comparable) Comparable {
 // I strongly suggest running the garbage collector and scavenger once it's done.
 //   runtime.GC()
 //   debug.FreeOSMemory()
+// Alternatively, you can use RebalanceGC().
 func (st *SimpleTree) Rebalance() *SimpleTree {
 	flat := st.flatten()
 	sort.Sort(flat)
@@ -78,13 +79,42 @@ func (st *SimpleTree) Rebalance() *SimpleTree {
 	return st
 }
 
-// Rebalance rebalances the tree and runs the garbage collector.
+// RebalanceGC rebalances the tree and runs the garbage collector.
 func (st *SimpleTree) RebalanceGC() *SimpleTree {
 	st.Rebalance()
 	runtime.GC()
 	debug.FreeOSMemory()
 
 	return st
+}
+
+// Delete sets all the pointers of tree to nil.
+//
+// I strongly suggest running the garbage collector and scavenger once it's done.
+//   runtime.GC()
+//   debug.FreeOSMemory()
+// Alternatively, you can use DeleteGC().
+func (st *SimpleTree) Delete() *SimpleTree {
+	st.root.delete()
+	runtime.GC()
+	debug.FreeOSMemory()
+
+	return nil
+}
+
+// DeleteGC sets all the pointers of the tree to nil and runs the garbage
+// collector.
+//
+// I strongly suggest running the garbage collector and scavenger once it's done.
+//   runtime.GC()
+//   debug.FreeOSMemory()
+// Alternatively, you can use DeleteGC().
+func (st *SimpleTree) DeleteGC() *SimpleTree {
+	st.Delete()
+	runtime.GC()
+	debug.FreeOSMemory()
+
+	return nil
 }
 
 // Flatten returns the content of the tree as a ComparableArray.
@@ -136,6 +166,15 @@ func (sn *simpleNode) ascend(pivot Comparable) Comparable {
 	}
 
 	return sn.data
+}
+
+func (sn *simpleNode) delete() *simpleNode {
+	if sn != nil {
+		sn.left = sn.left.delete()
+		sn.right = sn.right.delete()
+	}
+
+	return nil
 }
 
 func (sn *simpleNode) flatten(ca ComparableArray) ComparableArray {
