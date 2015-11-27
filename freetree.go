@@ -66,6 +66,15 @@ func (ft FreeTree) flatten() ComparableArray {
 	return ft.root.flatten(ca, ft.dataChunk)
 }
 
+// Delete deletes the memory chunks associated with the tree.
+func (ft *FreeTree) Delete() *FreeTree {
+	ft.root = nil
+	ft.dataChunk.Delete()
+	ft.nodeChunk.Delete()
+
+	return nil
+}
+
 // -----------------------------------------------------------------------------
 
 type freeNode struct {
