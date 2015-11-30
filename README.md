@@ -28,6 +28,97 @@ Complete code for the following demonstration is available [here](experiment/exp
 
 All of the results shown below were computed using a DELL XPS 15-9530 (i7-4712HQ@2.30GHz).
 
+#### Case A: normal BST, 10 million integers
+
+Let's look at GC performances while storing 10 million integers in a "classic" binary search tree:
+
+```Go
+// build 10 million integers
+ints := make([]freetree.Comparable, 10*1e6)
+// init our integers
+for i := range ints {
+	ints[i] = Int(i)
+}
+
+// build a new BST and insert our 10 million integers in it
+// our integers are pre-sorted, so the tree will be perfectly balanced (because
+// that's how FreeTree's insert API works)
+st := freetree.NewSimpleTree().InsertArray(ints)
+
+for i := 0; i < 5; i++ {
+	// randomly print one of our integers to make sure it's all working
+	// as expected, and to prevent them from being optimized away
+	fmt.Printf("\tvalue @ index %d: %d\n", i*1e4, st.Ascend(Int(i*1e4)))
+
+	// run GC
+	now := time.Now().UnixNano()
+	runtime.GC()
+	fmt.Printf("\tGC time (normal BST, 10 million integers): %d us\n", (time.Now().UnixNano()-now)/1e3)
+}
+```
+
+This prints:
+
+```
+value @ index 0: 0
+GC time (normal BST, 10 million integers): 276821 us
+value @ index 10000: 10000
+GC time (normal BST, 10 million integers): 278205 us
+value @ index 20000: 20000
+GC time (normal BST, 10 million integers): 286721 us
+value @ index 30000: 30000
+GC time (normal BST, 10 million integers): 277796 us
+value @ index 40000: 40000
+GC time (normal BST, 10 million integers): 277528 us
+```
+
+That's an average ~278ms per GC call.
+Let's move to case B where we'll store 10 million integers in a FreeTree.
+
+#### Case B: FreeTree, 10 million integers
+
+Let's look at GC performances while storing 10 million integers in a `FreeTree` (i.e. a binary search tree with no GC overhead):
+
+```Go
+// build a new FreeTree using the data from our SimpleTree
+ft, err := freetree.NewFreeTree(st)
+if err != nil {
+	log.Fatal(err)
+}
+
+// delete the SimpleTree and get rid of the garbage
+st = st.DeleteGC()
+
+for i := 0; i < 5; i++ {
+	// randomly print one of our integers to make sure it's all working
+	// as expected
+	fmt.Printf("\tvalue @ index %d: %d\n", i*1e4, ft.Ascend(Int(i*1e4)))
+
+	// run GC
+	now := time.Now().UnixNano()
+	runtime.GC()
+	fmt.Printf("\tGC time (FreeTree, 10 million integers): %d us\n", (time.Now().UnixNano()-now)/1e3)
+}
+```
+
+This prints:
+
+```
+value @ index 0: 0
+GC time (FreeTree, 10 million integers): 3287 us
+value @ index 10000: 10000
+GC time (FreeTree, 10 million integers): 3527 us
+value @ index 20000: 20000
+GC time (FreeTree, 10 million integers): 3346 us
+value @ index 30000: 30000
+GC time (FreeTree, 10 million integers): 3447 us
+value @ index 40000: 40000
+GC time (FreeTree, 10 million integers): 3104 us
+```
+
+We went from a ~278ms average to a ~3.3ms average; and most importantly, we did that without modifying our design: internally, both trees' structures and `Ascend` API work the same way.
+
+
 ## License ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=plastic)
 
 The MIT License (MIT) - see LICENSE for more details
