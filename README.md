@@ -178,8 +178,7 @@ value @ index 40000: 40000
 GC time (FreeTree, 10 million integers): 3104 us
 ```
 
-We went from a ~278ms average to a ~3.3ms average; and most importantly, we did that without modifying our design: internally, both trees' structures and `Ascend` API work the same way.
-
+We went from a ~278ms average to a ~3.3ms average; and most importantly, we did that without modifying our design: internally, both trees' node structures and `Ascend` API work the same way.
 
 ## License ![License](https://img.shields.io/badge/license-MIT-blue.svg?style=plastic)
 
