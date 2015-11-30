@@ -1,6 +1,13 @@
-# mmm ![Status](https://img.shields.io/badge/status-stable-green.svg?style=plastic) [![Build Status](http://img.shields.io/travis/teh-cmc/freetree.svg?style=plastic)](https://travis-ci.org/teh-cmc/freetree) [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=plastic)](http://godoc.org/github.com/teh-cmc/freetree)
+# FreeTree ![Status](https://img.shields.io/badge/status-stable-green.svg?style=plastic) [![Build Status](http://img.shields.io/travis/teh-cmc/freetree.svg?style=plastic)](https://travis-ci.org/teh-cmc/freetree) [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=plastic)](http://godoc.org/github.com/teh-cmc/freetree)
 
-Generic binary search tree with zero GC overhead, for golang. Built on [mmm](https://github.com/teh-cmc/freetree).
+Generic binary search tree with zero GC overhead, for golang. Built on [mmm](https://github.com/teh-cmc/mmm).
+
+## What you should know
+
+`FreeTree` was developed mainly as a proof-of-concept for [mmm](https://github.com/teh-cmc/mmm); that is, to demonstrate how you can use `mmm` to avoid GC overhead in "pointer-heavy" Go software, without modifying nor complexifying your original design (i.e. entirely redesigning your software to avoid the use of pointers, which often leads to overly complex and less maintainable code).
+
+Although I do use it for some big immutable caches of mine, `FreeTree`'s API is quite incomplete and could certainly be better designed; especially during initialization where a lot of unnecessary copying could probably be avoided.
+Feel free to improve it :)
 
 ## Install
 
