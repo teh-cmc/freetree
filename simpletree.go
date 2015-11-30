@@ -93,7 +93,7 @@ func (st *SimpleTree) RebalanceGC() *SimpleTree {
 	return st
 }
 
-// Delete sets all the pointers of tree to nil.
+// Delete sets all the pointers in the tree to nil.
 //
 // I strongly suggest running the garbage collector and scavenger once it's done.
 //   runtime.GC()
@@ -109,11 +109,6 @@ func (st *SimpleTree) Delete() *SimpleTree {
 
 // DeleteGC sets all the pointers of the tree to nil and runs the garbage
 // collector.
-//
-// I strongly suggest running the garbage collector and scavenger once it's done.
-//   runtime.GC()
-//   debug.FreeOSMemory()
-// Alternatively, you can use DeleteGC().
 func (st *SimpleTree) DeleteGC() *SimpleTree {
 	st.Delete()
 	runtime.GC()

@@ -20,7 +20,7 @@ type FreeTree struct {
 	root      *freeNode
 }
 
-// NewFreeTree returns a new FreeTree using the data of a supplied SimpleTree.
+// NewFreeTree returns a new FreeTree using the data from a supplied SimpleTree.
 func NewFreeTree(st *SimpleTree) (*FreeTree, error) {
 	nbNodes := st.nodes
 	nodeChunk, err := mmm.NewMemChunk(freeNode{}, nbNodes)
