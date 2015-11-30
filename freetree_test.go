@@ -5,7 +5,11 @@
 
 package freetree
 
-import "testing"
+import (
+	"fmt"
+	"log"
+	"testing"
+)
 
 // -----------------------------------------------------------------------------
 
@@ -170,4 +174,58 @@ func TestFreeTree_pair_unsorted_input_rebalanced(t *testing.T) {
 	if ft.Ascend(intTest(8)) != nil {
 		t.Error("unexpected retval")
 	}
+}
+
+// -----------------------------------------------------------------------------
+
+type Int int
+
+func (i1 Int) Less(i2 Comparable) bool { return i1 < i2.(Int) }
+
+func Example_simple_usage() {
+	// build a new SimpleTree and insert 3 integers in it
+	st := NewSimpleTree().Insert(Int(17), Int(66), Int(42))
+
+	// print 42
+	fmt.Println(st.Ascend(Int(42)))
+	// print <nil>
+	fmt.Println(st.Ascend(Int(43)))
+
+	// print [42 17 66]
+	fmt.Println(st.Flatten())
+
+	// rebalance the tree
+	st.Rebalance()
+
+	// print [17 66 42]
+	fmt.Println(st.Flatten())
+
+	// build a new FreeTree using the data from the SimpleTree
+	ft, err := NewFreeTree(st)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// delete the SimpleTree and clear the garbage
+	st = st.DeleteGC()
+
+	// print 42
+	fmt.Println(ft.Ascend(Int(42)))
+	// print <nil>
+	fmt.Println(ft.Ascend(Int(43)))
+
+	// print [17 66 42]
+	fmt.Println(ft.Flatten())
+
+	// delete the FreeTree
+	ft.Delete()
+
+	// Output:
+	// 42
+	// <nil>
+	// [42 17 66]
+	// [17 66 42]
+	// 42
+	// <nil>
+	// [17 66 42]
 }
