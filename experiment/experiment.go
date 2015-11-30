@@ -21,6 +21,9 @@ import (
 // This file shows how to use a FreeTree and how it affects GC performances
 // compared to a classic binary search tree.
 //
+// All of the results shown below were computed using a DELL XPS 15-9530
+// (i7-4712HQ@2.30GHz).
+//
 //   go run experiment.go
 //
 /////
@@ -46,7 +49,8 @@ func main() {
 	fmt.Println(`Case A: GC performances while storing 10 million integers in a classic binary search tree` + "\n")
 
 	// build a new BST and insert our 10 million integers in it
-	// our integers are pre-sorted, so the tree will be perfectly balanced
+	// our integers are pre-sorted, so the tree will be perfectly balanced (because
+	// that's how FreeTree's insert API works)
 	st := freetree.NewSimpleTree().InsertArray(ints)
 
 	// get rid of init garbage
